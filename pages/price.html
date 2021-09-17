@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Zypher Assignment</title>
+
+    <!-- Favicon -->
+    <link href="/assets/img/brand/favicon.png" rel="icon" type="image/png">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+    <!-- Argon CSS -->
+    <link type="text/css" href="/assets/css/argon.min.css" rel="stylesheet">
+
+    <style>
+        header {
+            position: fixed;
+            top: 0;
+            z-index: 1;
+            box-shadow: 0 0 4px grey;
+            background: #fff;
+        }
+
+        header h3 {
+            font-size: 1.4rem;
+        }
+
+        h3,
+        h2 {
+            color: #45728a;
+            margin-bottom: 0 !important;
+        }
+        main .card{
+            color:#000;
+        }
+
+        main h2 {
+            font-size: 1.5rem;
+        }
+        main p{
+            font-size: .8rem;
+            font-weight: 600;
+            color: grey;
+        }
+        main p span:last-child{
+            color: #000;
+            
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <header class="container-fluid py-1">
+        <a onclick="goBack()"><i class="fas fa-chevron-left"></i>  </a>
+    </header>
+
+    <main class="p-2 pt-5">
+      
+        <div class="card mb-3">
+            <div class="card-header py-1 border-0">
+                <h2>
+                    Fare Calculation
+                </h2>
+            </div>
+            <div class="card-body" id="cardBody">
+                
+            </div>
+
+            <div class="card-footer" id="cardFooter">
+                <a class="btn btn-danger w-100 text-white" onclick="cashCollect()" >
+                    Confirm cash payment
+                </a>
+            </div>
+        </div>
+       
+
+    </main>
+
+
+
+    <!-- Core -->
+    <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/js-cookie/js.cookie.js"></script>
+    <!-- Argon JS -->
+    <script src="/assets/js/argon.min.js"></script>
+
+    <!-- for handle fetch requests -->
+    <script src="../service.js"></script>
+    <script>
+
+let tripId = location.href.split('=')[1];
+
+getTripFare()
+        function getTripFare() {
+            fetchFromServer('POST', `https://hirebus-backend.herokuapp.com/driver/getFare`,{tripId:tripId})
+                .then(renderUI)         //pass callback renderClientList
+                .catch(err => console.log(err)) //handle error response
+        }
+
+        function cashCollect() {
+            fetchFromServer('POST', `https://hirebus-backend.herokuapp.com/driver/collectedPayment`,{tripId,paymentCollected:true})
+                .then(res=>console.log(res))         //pass callback renderClientList
+                .catch(err => console.log(err)) //handle error response
+        }
+
+
+
+        function renderUI(res){
+            let card = document.getElementById('cardBody');
+            let elem = document.createElement('div');
+            elem.innerHTML = `
+                    <p><span>Booking KMS</span><span class="float-right">${res.trip.estimatedDistInKm} kms</span></p>
+                    <p><span>Booking Duration</span><span class="float-right">${res.trip.bookingDuration} hours</span></p>
+                    <p><span>EXTRA KMS</span><span class="float-right">${res.trip.extraDistance} kms</span></p>
+                    <p><span>EXTRA Duration</span><span class="float-right">${res.trip.extraDuration} hours</span></p>
+                    <p class="mt-4 mb-0"><span>Total Extra Cost</span><span class="float-right">Rs. ${res.trip.endExtraCost}</span></p>
+                    <p ><span>(incl. Of All Damages)</span><span></span></p>
+                    <p><span>Remaining Amount to Pay</span><span class="float-right">Rs. ${res.trip.remainingAmount}</span></p>
+            `
+            card.append(elem)
+
+            if(!res.trip.refund)
+            document.getElementById('cardFooter').innerHTML += '<p class="mt-4"><span>Refund will be processed by Hirebus Team within 7 working days</span></p>'
+        }
+
+
+
+        function goBack(){
+            window.history.back()
+        }
+
+         </script>
+</body>
+
+</html>
