@@ -265,7 +265,6 @@ window.location
 
         getTripDetail()
         function getTripDetail() {
-            if(tripId)
             fetchFromServer('POST', 'https://hirebus-backend.herokuapp.com/admin/getTripDetails', { tripId: tripId })
                 .then(renderInUI)         //pass callback renderClientList
                 .catch(err => console.log(err)) //handle error response
@@ -295,7 +294,7 @@ window.location
             fetchFromServer('POST', 'https://hirebus-backend.herokuapp.com/driver/verifyEndTrip', {
                 otp, odoMeterEndNumber: +odoMeterEndNumber, tripId, odoMeterEndScreenshotURL: '',damges
             }).then(res => {
-                if(res) window.location.href = `./pages/price.html?tripId=${tripId}`
+                if(res) window.location.href = `./price.html?tripId=${tripId}`
             }).catch(err => console.log(err))
         })
 
